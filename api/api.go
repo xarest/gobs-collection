@@ -42,11 +42,6 @@ type API struct {
 	httpServer *http.Server
 }
 
-var _ gobs.IServiceInit = (*API)(nil)
-var _ gobs.IServiceSetup = (*API)(nil)
-var _ gobs.IServiceStart = (*API)(nil)
-var _ gobs.IServiceStop = (*API)(nil)
-
 func (a *API) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	return &gobs.ServiceLifeCycle{
 		Deps: gobs.Dependencies{
@@ -54,6 +49,7 @@ func (a *API) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 			config.NewIConfig(),
 
 			&middleware.HTTPErrorHandling{},
+			&middleware.MWLogger{},
 			&validator.Validator{},
 
 			&public_api.PublicHandler{},
@@ -79,9 +75,10 @@ func (a *API) Setup(ctx context.Context, deps gobs.Dependencies) error {
 		cfgService    config.IConfiguration
 		mErrorHandler *middleware.HTTPErrorHandling
 		validator     *validator.Validator
+		mLogger       *middleware.MWLogger
 		handlers      []hCommon.IHandler
 	)
-	if err := deps.Assign(&a.log, &cfgService, &mErrorHandler, &validator); err != nil {
+	if err := deps.Assign(&a.log, &cfgService, &mErrorHandler, &mLogger, &validator); err != nil {
 		return err
 	}
 	for _, d := range deps {
@@ -106,8 +103,14 @@ func (a *API) Setup(ctx context.Context, deps gobs.Dependencies) error {
 	}))
 
 	e.Use(eMiddleware.Recover())
+	e.Use(eMiddleware.RequestID())
+	e.Use(eMiddleware.Gzip())
+	e.Use(eMiddleware.Decompress())
+	e.Use(eMiddleware.CSRF())
+
 	e.HTTPErrorHandler = mErrorHandler.CatchErr
 	e.Validator = validator
+	e.Use(mLogger.Handler())
 
 	// setup routes
 	g := e.Group("/api")
@@ -142,3 +145,8 @@ func (a *API) Stop(ctx context.Context) error {
 	defer cancel()
 	return a.httpServer.Shutdown(ctx)
 }
+
+var _ gobs.IServiceInit = (*API)(nil)
+var _ gobs.IServiceSetup = (*API)(nil)
+var _ gobs.IServiceStart = (*API)(nil)
+var _ gobs.IServiceStop = (*API)(nil)

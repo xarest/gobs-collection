@@ -10,8 +10,7 @@ import (
 	"github.com/xarest/gobs"
 	"github.com/xarest/gobs-template/api"
 	"github.com/xarest/gobs-template/lib/logger"
-	gCommon "github.com/xarest/gobs/common"
-	gUtils "github.com/xarest/gobs/utils"
+	"github.com/xarest/gobs-template/worker/local"
 )
 
 type keyType string
@@ -29,10 +28,9 @@ func main() {
 
 	appCtx := context.WithValue(ctx, ENV_KEY, app_mode)
 
-	var log logger.ILogger = logger.NewILogger()
-	if err := log.(gobs.IServiceSetup).Setup(appCtx, nil); err != nil {
-		fmt.Println("Error setting up logger")
-		return
+	log := logger.Logrus{}
+	if err := log.Setup(appCtx, nil); err != nil {
+		panic(err)
 	}
 
 	bs := gobs.NewBootstrap(gobs.Config{
@@ -41,8 +39,8 @@ func main() {
 		// EnableLogDetail:    true,
 	})
 
-	bs.Add(log, gCommon.StatusSetup, gUtils.DefaultServiceName(logger.NewILogger()))
 	bs.AddOrPanic(&api.API{})
+	bs.AddOrPanic(&local.Scheduler{})
 
 	bs.StartBootstrap(appCtx, syscall.SIGINT, syscall.SIGTERM)
 }
