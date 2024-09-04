@@ -11,7 +11,6 @@ import (
 	"github.com/xarest/gobs-template/lib/logger"
 	"github.com/xarest/gobs-template/schema"
 	"github.com/xarest/gobs-template/worker/local/pool"
-	gCommon "github.com/xarest/gobs/common"
 )
 
 type SchedulerConfig struct {
@@ -21,7 +20,8 @@ type SchedulerConfig struct {
 type SchedulerStatus int
 
 const (
-	SchedulerStatusRunning SchedulerStatus = iota
+	SchedulerStatuInit SchedulerStatus = iota
+	SchedulerStatusRunning
 	SchedulerStatusWaiting
 )
 
@@ -43,15 +43,12 @@ func (s *Scheduler) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 			&pool.Worker1{},
 			&pool.Worker2{},
 		},
-		AsyncMode: map[gCommon.ServiceStatus]bool{
-			gCommon.StatusStart: true,
-		},
 	}, nil
 }
 
-func (s *Scheduler) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (s *Scheduler) Setup(ctx context.Context, deps ...gobs.IService) error {
 	var sConfig config.IConfiguration
-	if err := deps.Assign(&s.log, &sConfig); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&s.log, &sConfig); err != nil {
 		return err
 	}
 	var cfg SchedulerConfig
@@ -67,63 +64,68 @@ func (s *Scheduler) Setup(ctx context.Context, deps gobs.Dependencies) error {
 	}
 	s.mu = &sync.Mutex{}
 	s.ch = make(chan any, 5)
+	s.tasks = []*schema.Task{}
 	return nil
 }
 
-func (s *Scheduler) Start(ctx context.Context) error {
-	go func() error {
-		for {
-			timer, cancel := context.WithTimeout(ctx, time.Duration(s.ExecuteInterval)*time.Millisecond)
-			select {
-			case <-timer.Done():
-				s.log.Debug("Scheduler run periodically")
-			case _, ok := <-s.ch:
-				if !ok {
-					cancel()
-					return nil
-				}
-				s.log.Debug("Scheduler run for task incomming")
-			}
-			cancel()
-			if len(s.tasks) == 0 {
-				continue
-			}
-			s.mu.Lock()
-			s.status = SchedulerStatusRunning
-			tasks := s.tasks
-			s.tasks = nil
-			s.mu.Unlock()
+func (s *Scheduler) StartServer(ctx context.Context, onReady func(err error)) error {
+	s.mu.Lock()
+	if s.status == SchedulerStatuInit {
+		s.status = SchedulerStatusWaiting
+	}
+	s.mu.Unlock()
 
-			for _, task := range tasks {
-				for _, w := range s.workers {
-					if w.ID() != task.WorkerID {
-						continue
-					}
-					res, err := w.Execute(ctx, task.Params)
-					if err != nil {
-						task.Error = err.Error()
-						task.Status = schema.TaskStatusFailed
-					} else {
-						task.Status = schema.TaskStatusDone
-					}
-					if res != nil {
-						task.Result, err = json.Marshal(res)
-						if err != nil {
-							s.log.Error("Failed to marshal task result: %v", err)
-						}
-					}
-					// Save task results to DB
-					out, _ := json.Marshal(task)
-					s.log.Info("Finish task", task.ID, string(out))
-				}
+	onReady(nil)
+	for {
+		timer, cancel := context.WithTimeout(ctx, time.Duration(s.ExecuteInterval)*time.Millisecond)
+		select {
+		case <-timer.Done():
+			s.log.Debug("Scheduler run periodically")
+		case _, ok := <-s.ch:
+			if !ok {
+				cancel()
+				return nil
 			}
-
-			s.mu.Lock()
-			s.status = SchedulerStatusWaiting
-			s.mu.Unlock()
+			s.log.Debug("Scheduler run for task incomming")
 		}
-	}()
-	return nil
+		cancel()
+		if len(s.tasks) == 0 {
+			continue
+		}
+		s.mu.Lock()
+		s.status = SchedulerStatusRunning
+		tasks := s.tasks
+		s.tasks = nil
+		s.mu.Unlock()
+
+		for _, task := range tasks {
+			for _, w := range s.workers {
+				if w.ID() != task.WorkerID {
+					continue
+				}
+				res, err := w.Execute(ctx, task.Params)
+				if err != nil {
+					task.Error = err.Error()
+					task.Status = schema.TaskStatusFailed
+				} else {
+					task.Status = schema.TaskStatusDone
+				}
+				if res != nil {
+					task.Result, err = json.Marshal(res)
+					if err != nil {
+						s.log.Error("Failed to marshal task result: %v", err)
+					}
+				}
+				// Save task results to DB
+				out, _ := json.Marshal(task)
+				s.log.Info("Finish task", task.ID, string(out))
+			}
+		}
+
+		s.mu.Lock()
+		s.status = SchedulerStatusWaiting
+		s.mu.Unlock()
+	}
 }
 
 func (s *Scheduler) AddTask(task *schema.Task) {
@@ -142,4 +144,4 @@ func (s *Scheduler) Stop(ctx context.Context) error {
 
 var _ gobs.IServiceInit = (*Scheduler)(nil)
 var _ gobs.IServiceSetup = (*Scheduler)(nil)
-var _ gobs.IServiceStart = (*Scheduler)(nil)
+var _ gobs.IServiceStartServer = (*Scheduler)(nil)

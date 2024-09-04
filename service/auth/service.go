@@ -29,8 +29,8 @@ func (s *Auth) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (s *Auth) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&s.log, &s.jwtToken, &s.repository)
+func (s *Auth) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&s.log, &s.jwtToken, &s.repository)
 }
 
 func (s *Auth) Register(ctx context.Context, creds dto.Credentials) (*schema.User, error) {

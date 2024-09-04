@@ -30,8 +30,8 @@ func (a *Auth) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 }
 
 // Setup implements gobs.IServiceSetup.
-func (a *Auth) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&a.log, &a.mwAuth, &a.service)
+func (a *Auth) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&a.log, &a.mwAuth, &a.service)
 }
 
 // Route implements common.IHandler.

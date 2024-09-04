@@ -24,8 +24,8 @@ func (u *UserRepository) Init(ctx context.Context) (*gobs.ServiceLifeCycle, erro
 }
 
 // Setup implements gobs.IServiceSetup.
-func (u *UserRepository) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&u.db, &u.user)
+func (u *UserRepository) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&u.db, &u.user)
 }
 
 func (u *UserRepository) GetUserForSignIn(ctx context.Context, email string) (*schema.User, error) {

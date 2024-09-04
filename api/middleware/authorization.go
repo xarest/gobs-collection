@@ -30,8 +30,8 @@ func (a *Authorization) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error
 	}, nil
 }
 
-func (a *Authorization) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&a.log, &a.db, &a.cache)
+func (a *Authorization) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&a.log, &a.db, &a.cache)
 }
 
 func (a *Authorization) Handler(permissions ...string) echo.MiddlewareFunc {

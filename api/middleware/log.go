@@ -22,8 +22,8 @@ func (l *MWLogger) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (l *MWLogger) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&l.log)
+func (l *MWLogger) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&l.log)
 }
 
 func (l *MWLogger) Handler() echo.MiddlewareFunc {

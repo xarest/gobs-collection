@@ -13,7 +13,7 @@ type Logrus struct {
 }
 
 // Setup implements gobs.IServiceSetup.
-func (l *Logrus) Setup(ctx context.Context, _ gobs.Dependencies) error {
+func (l *Logrus) Setup(ctx context.Context, _ ...gobs.IService) error {
 	l.Logger = log.New()
 	appMode := utils.GetAppMode(ctx)
 	if appMode == "production" {

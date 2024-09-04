@@ -25,8 +25,8 @@ func (b *Check) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (b *Check) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&b.worker)
+func (b *Check) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&b.worker)
 }
 
 // Route implements common.IHandler.

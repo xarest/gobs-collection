@@ -9,7 +9,7 @@ import (
 type IClient interface {
 	GetTasks(status schema.TaskStatus, page schema.Page) ([]schema.Task, error)
 	GetTask(id uuid.UUID) (schema.Task, error)
-	AddTask(wokerID string, params any) error
+	AddTask(wokerID string, params any, createdBy uuid.UUID) error
 }
 
 func NewIClient() IClient {

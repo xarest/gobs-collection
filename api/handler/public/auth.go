@@ -27,8 +27,8 @@ func (a *Auth) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (a *Auth) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&a.log, &a.service)
+func (a *Auth) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&a.log, &a.service)
 }
 
 func (a *Auth) Route(r *echo.Group) {

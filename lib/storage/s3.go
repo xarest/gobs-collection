@@ -39,12 +39,12 @@ func (s *S3) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (s *S3) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (s *S3) Setup(ctx context.Context, deps ...gobs.IService) error {
 	var (
 		cfg    S3Config
 		config config.IConfiguration
 	)
-	if err := deps.Assign(&s.log, &config); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&s.log, &config); err != nil {
 		return err
 	}
 	if err := config.Parse(&cfg); err != nil {

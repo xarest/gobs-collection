@@ -19,7 +19,7 @@ require (
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
-	github.com/xarest/gobs v1.5.7
+	github.com/xarest/gobs v1.6.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.24.0
 	golang.org/x/time v0.5.0

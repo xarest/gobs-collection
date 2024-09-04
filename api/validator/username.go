@@ -22,8 +22,8 @@ type UserName struct {
 // 	}, nil
 // }
 
-// func (uv *UserName) Setup(ctx context.Context, deps gobs.Dependencies) error {
-// 	deps.Assign(&uv.log)
+// func (uv *UserName) Setup(ctx context.Context, deps ...gobs.IService) error {
+// 	gobs.Dependencies(deps).Assign(&uv.log)
 // }
 
 func (uv *UserName) Register() (v.Func, string) {

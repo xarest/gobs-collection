@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ import (
 	"github.com/xarest/gobs-template/api/validator"
 
 	"github.com/xarest/gobs-template/lib/config"
+	httpclient "github.com/xarest/gobs-template/lib/http-client"
 	"github.com/xarest/gobs-template/lib/logger"
 	gCommon "github.com/xarest/gobs/common"
 )
@@ -40,6 +42,7 @@ type API struct {
 	config     APIConfig
 	log        logger.ILogger
 	httpServer *http.Server
+	httpClient *httpclient.HTTPCient
 }
 
 func (a *API) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
@@ -47,6 +50,7 @@ func (a *API) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 		Deps: gobs.Dependencies{
 			logger.NewILogger(),
 			config.NewIConfig(),
+			&httpclient.HTTPCient{},
 
 			&middleware.HTTPErrorHandling{},
 			&middleware.MWLogger{},
@@ -69,7 +73,7 @@ func (a *API) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (a *API) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *API) Setup(ctx context.Context, deps ...gobs.IService) error {
 	// gobs parse all dependencies
 	var (
 		cfgService    config.IConfiguration
@@ -78,7 +82,15 @@ func (a *API) Setup(ctx context.Context, deps gobs.Dependencies) error {
 		mLogger       *middleware.MWLogger
 		handlers      []hCommon.IHandler
 	)
-	if err := deps.Assign(&a.log, &cfgService, &mErrorHandler, &mLogger, &validator); err != nil {
+	if err := gobs.Dependencies(deps).Assign(
+		&a.log,
+		&cfgService,
+		&a.httpClient,
+
+		&mErrorHandler,
+		&mLogger,
+		&validator,
+	); err != nil {
 		return err
 	}
 	for _, d := range deps {
@@ -131,12 +143,21 @@ func (a *API) Setup(ctx context.Context, deps gobs.Dependencies) error {
 	return nil
 }
 
-func (a *API) Start(ctx context.Context) error {
+func (a *API) StartServer(ctx context.Context, onReady func(err error)) error {
 	a.log.Infof("API server is running on port %d", a.config.Port)
-	if err := a.httpServer.ListenAndServe(); err != http.ErrServerClosed {
-		return err
-	}
-	return nil
+	go func(ctx context.Context) {
+		defer onReady(nil)
+		for {
+			resp, err := a.httpClient.Get(ctx, fmt.Sprintf("http://localhost:%d/api/ping", a.config.Port), nil)
+			if err != nil {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+			a.log.Infof("API server is ready: %s", string(resp))
+			break
+		}
+	}(ctx)
+	return a.httpServer.ListenAndServe()
 }
 
 func (a *API) Stop(ctx context.Context) error {
@@ -148,5 +169,5 @@ func (a *API) Stop(ctx context.Context) error {
 
 var _ gobs.IServiceInit = (*API)(nil)
 var _ gobs.IServiceSetup = (*API)(nil)
-var _ gobs.IServiceStart = (*API)(nil)
+var _ gobs.IServiceStartServer = (*API)(nil)
 var _ gobs.IServiceStop = (*API)(nil)

@@ -12,7 +12,7 @@ import (
 type EnvConfig struct {
 }
 
-func (c *EnvConfig) Setup(ctx context.Context, _ gobs.Dependencies) error {
+func (c *EnvConfig) Setup(ctx context.Context, _ ...gobs.IService) error {
 	if err := godotenv.Load(); err != nil {
 		fmt.Printf("Error loading .env file: %v\n", err)
 		// return err

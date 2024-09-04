@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
 	"github.com/xarest/gobs-template/api/handler/common"
@@ -22,8 +23,8 @@ func (b *Trigger) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (b *Trigger) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&b.wc)
+func (b *Trigger) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&b.wc)
 }
 
 // Route implements common.IHandler.
@@ -36,7 +37,7 @@ func (t *Trigger) TriggerTask(c echo.Context) error {
 	params := map[string]any{
 		"delay": 5000,
 	}
-	if err := t.wc.AddTask("worker1", params); err != nil {
+	if err := t.wc.AddTask("worker1", params, uuid.New()); err != nil {
 		return err
 	}
 	return c.JSON(http.StatusOK, "Trigger task ID")

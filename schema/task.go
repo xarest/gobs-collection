@@ -25,5 +25,5 @@ type Task struct {
 	Result    json.RawMessage `json:"result"`
 	Error     string          `json:"error"`
 	CreatedAt time.Time       `json:"created_at"`
-	CreatedBy time.Time       `json:"created_by"`
+	CreatedBy uuid.UUID       `json:"created_by"`
 }

@@ -34,12 +34,12 @@ func (o *Redis) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (o *Redis) Setup(c context.Context, deps gobs.Dependencies) error {
+func (o *Redis) Setup(c context.Context, deps ...gobs.IService) error {
 	var (
 		rdbCfg RedisConfig
 		config config.IConfiguration
 	)
-	if err := deps.Assign(&config, &o.log); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&config, &o.log); err != nil {
 		return err
 	}
 	if err := config.Parse(&rdbCfg); err != nil {

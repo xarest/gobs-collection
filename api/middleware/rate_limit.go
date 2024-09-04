@@ -25,8 +25,8 @@ func (r *RateLimit) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (r *RateLimit) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&r.log)
+func (r *RateLimit) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&r.log)
 }
 
 func (r *RateLimit) Handler(limit float64, burst int, duration time.Duration) echo.MiddlewareFunc {

@@ -25,12 +25,12 @@ func (a *Authentication) Init(ctx context.Context) (*gobs.ServiceLifeCycle, erro
 	}, nil
 }
 
-func (a *Authentication) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *Authentication) Setup(ctx context.Context, deps ...gobs.IService) error {
 	var (
 		config config.IConfiguration
 		cfg    JWTSecret
 	)
-	if err := deps.Assign(&a.log, &config); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&a.log, &config); err != nil {
 		return err
 	}
 	if err := config.Parse(&cfg); err != nil {

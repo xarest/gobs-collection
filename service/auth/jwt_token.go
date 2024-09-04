@@ -24,12 +24,12 @@ func (a *JwtToken) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (a *JwtToken) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *JwtToken) Setup(ctx context.Context, deps ...gobs.IService) error {
 	var (
 		jwtSecret JWTSecret
 		config    config.IConfiguration
 	)
-	if err := deps.Assign(&config); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&config); err != nil {
 		return err
 	}
 	if err := config.Parse(&jwtSecret); err != nil {

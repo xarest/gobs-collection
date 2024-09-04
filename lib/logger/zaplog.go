@@ -13,11 +13,7 @@ type ZapLogger struct {
 	*zap.SugaredLogger
 }
 
-var _ gobs.IServiceSetup = (*ZapLogger)(nil)
-var _ gobs.IServiceStart = (*ZapLogger)(nil)
-var _ gobs.IServiceStop = (*ZapLogger)(nil)
-
-func (l *ZapLogger) Setup(c context.Context, _ gobs.Dependencies) error {
+func (l *ZapLogger) Setup(c context.Context, _ ...gobs.IService) error {
 	var config zap.Config
 	env := utils.GetAppMode(c)
 	if env == "development" {
@@ -47,3 +43,7 @@ func (l *ZapLogger) Stop(c context.Context) error {
 	l.Sync()
 	return nil
 }
+
+var _ gobs.IServiceSetup = (*ZapLogger)(nil)
+var _ gobs.IServiceStart = (*ZapLogger)(nil)
+var _ gobs.IServiceStop = (*ZapLogger)(nil)

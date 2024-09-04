@@ -24,7 +24,7 @@ func (a *SuperAdminHandler) Init(ctx context.Context) (*gobs.ServiceLifeCycle, e
 
 var _ gobs.IServiceSetup = (*SuperAdminHandler)(nil)
 
-func (a *SuperAdminHandler) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *SuperAdminHandler) Setup(ctx context.Context, deps ...gobs.IService) error {
 	for _, d := range deps {
 		a.handlers = append(a.handlers, d.(common.IHandler))
 	}

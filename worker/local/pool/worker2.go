@@ -25,8 +25,8 @@ func (w *Worker2) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (w *Worker2) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&w.log)
+func (w *Worker2) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&w.log)
 }
 
 func (w *Worker2) Execute(ctx context.Context, jsonParam []byte) (any, error) {

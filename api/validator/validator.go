@@ -22,7 +22,7 @@ func (v *Validator) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (vt *Validator) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (vt *Validator) Setup(ctx context.Context, deps ...gobs.IService) error {
 	vt.v = v.New()
 	for _, dep := range deps {
 		if validator, ok := dep.(IValidator); ok {

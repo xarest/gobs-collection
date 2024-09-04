@@ -23,7 +23,7 @@ func (a *UserHandler) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) 
 	}, nil
 }
 
-func (a *UserHandler) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *UserHandler) Setup(ctx context.Context, deps ...gobs.IService) error {
 	for _, d := range deps {
 		a.handlers = append(a.handlers, d.(common.IHandler))
 	}

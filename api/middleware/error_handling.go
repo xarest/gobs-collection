@@ -23,8 +23,8 @@ func (r *HTTPErrorHandling) Init(ctx context.Context) (*gobs.ServiceLifeCycle, e
 	}, nil
 }
 
-func (r *HTTPErrorHandling) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&r.log)
+func (r *HTTPErrorHandling) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&r.log)
 }
 
 func (r *HTTPErrorHandling) CatchErr(err error, c echo.Context) {

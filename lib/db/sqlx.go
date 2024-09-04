@@ -43,12 +43,12 @@ package db
 // 	}, nil
 // }
 
-// func (d *DB) Setup(ctx context.Context, deps gobs.Dependencies) error {
+// func (d *DB) Setup(ctx context.Context, deps ...gobs.IService) error {
 // 	var (
 // 		sCfg     config.IConfiguration
 // 		dbConfig DBConfig
 // 	)
-// 	if err := deps.Assign(&d.log, &sCfg); err != nil {
+// 	if err := gobs.Dependencies(deps).Assign(&d.log, &sCfg); err != nil {
 // 		return err
 // 	}
 

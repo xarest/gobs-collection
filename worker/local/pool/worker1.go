@@ -25,8 +25,8 @@ func (w *Worker1) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	}, nil
 }
 
-func (w *Worker1) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&w.log)
+func (w *Worker1) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&w.log)
 }
 
 func (w *Worker1) Execute(ctx context.Context, jsParams []byte) (any, error) {

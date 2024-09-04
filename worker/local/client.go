@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/xarest/gobs"
@@ -23,33 +24,27 @@ func (w *WorkerClient) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error)
 	}, nil
 }
 
-func (w *WorkerClient) Setup(ctx context.Context, deps gobs.Dependencies) error {
-	return deps.Assign(&w.scheduler)
+func (w *WorkerClient) Setup(ctx context.Context, deps ...gobs.IService) error {
+	return gobs.Dependencies(deps).Assign(&w.scheduler)
 }
 
-func (w *WorkerClient) Stop(ctx context.Context) error {
-	// TODO: Wait for multiple dependencies for each stages
-	return nil
-}
-
-// AddTask implements worker.IClient.
-func (w *WorkerClient) AddTask(workerID string, params any) error {
+func (w *WorkerClient) AddTask(workerID string, params any, createdBy uuid.UUID) error {
 	jsParams, err := json.Marshal(params)
 	if err != nil {
 		return err
 	}
 	task := schema.Task{
-		ID:       uuid.New(),
-		WorkerID: workerID,
-		Params:   jsParams,
-		Status:   schema.TaskStatusPending,
+		ID:        uuid.New(),
+		WorkerID:  workerID,
+		Params:    jsParams,
+		Status:    schema.TaskStatusPending,
+		CreatedAt: time.Now(),
 	}
 	w.scheduler.AddTask(&task)
 	w.taskList = append(w.taskList, &task)
 	return nil
 }
 
-// GetTask implements worker.IClient.
 func (w *WorkerClient) GetTask(id uuid.UUID) (schema.Task, error) {
 	for _, t := range w.taskList {
 		if t.ID == id {
@@ -59,7 +54,6 @@ func (w *WorkerClient) GetTask(id uuid.UUID) (schema.Task, error) {
 	return schema.Task{}, fmt.Errorf("task not found")
 }
 
-// GetTasks implements worker.IClient.
 func (w *WorkerClient) GetTasks(status schema.TaskStatus, page schema.Page) ([]schema.Task, error) {
 	var results []schema.Task
 	for i, t := range w.taskList {
@@ -78,4 +72,3 @@ func (w *WorkerClient) GetTasks(status schema.TaskStatus, page schema.Page) ([]s
 
 var _ gobs.IServiceInit = (*WorkerClient)(nil)
 var _ gobs.IServiceSetup = (*WorkerClient)(nil)
-var _ gobs.IServiceStop = (*WorkerClient)(nil)

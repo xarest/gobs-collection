@@ -13,7 +13,7 @@ type GoCache struct {
 	mc *cache.Cache
 }
 
-func (o *GoCache) Setup(c context.Context, deps gobs.Dependencies) error {
+func (o *GoCache) Setup(c context.Context, deps ...gobs.IService) error {
 	o.mc = cache.New(5*time.Minute, 10*time.Minute)
 	return nil
 }
@@ -49,5 +49,5 @@ func (r *GoCache) Wrap(
 	return res, nil
 }
 
-var _ gobs.IServiceSetup = (*Redis)(nil)
+var _ gobs.IServiceSetup = (*GoCache)(nil)
 var _ ICache = (*GoCache)(nil)

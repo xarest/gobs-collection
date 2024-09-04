@@ -22,7 +22,7 @@ func (a *BackgroundHandler) Init(ctx context.Context) (*gobs.ServiceLifeCycle, e
 	}, nil
 }
 
-func (a *BackgroundHandler) Setup(ctx context.Context, deps gobs.Dependencies) error {
+func (a *BackgroundHandler) Setup(ctx context.Context, deps ...gobs.IService) error {
 	for _, d := range deps {
 		a.handlers = append(a.handlers, d.(common.IHandler))
 	}

@@ -10,7 +10,7 @@ import (
 type Viper struct {
 }
 
-func (c *Viper) Setup(ctx context.Context, _ gobs.Dependencies) error {
+func (c *Viper) Setup(ctx context.Context, _ ...gobs.IService) error {
 	viper.AddConfigPath(".")
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
