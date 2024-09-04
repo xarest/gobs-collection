@@ -8,9 +8,9 @@ import (
 	"syscall"
 
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api"
-	"github.com/xarest/gobs-template/lib/logger"
-	"github.com/xarest/gobs-template/worker/local"
+	"github.com/xarest/gobs-collection/api"
+	"github.com/xarest/gobs-collection/lib/logger"
+	gocronwork "github.com/xarest/gobs-collection/worker/gocron"
 )
 
 type keyType string
@@ -40,7 +40,7 @@ func main() {
 	})
 
 	bs.AddOrPanic(&api.API{})
-	bs.AddOrPanic(&local.Scheduler{})
+	bs.AddOrPanic(&gocronwork.Scheduler{})
 
 	bs.StartBootstrap(appCtx, syscall.SIGINT, syscall.SIGTERM)
 }

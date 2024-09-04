@@ -12,8 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/config"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/config"
+	"github.com/xarest/gobs-collection/lib/logger"
 )
 
 type S3Config struct {

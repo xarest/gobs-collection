@@ -8,10 +8,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/cache"
-	"github.com/xarest/gobs-template/lib/db"
-	"github.com/xarest/gobs-template/lib/logger"
-	"github.com/xarest/gobs-template/schema"
+	"github.com/xarest/gobs-collection/lib/cache"
+	"github.com/xarest/gobs-collection/lib/db"
+	"github.com/xarest/gobs-collection/lib/logger"
+	"github.com/xarest/gobs-collection/schema"
 )
 
 type Authorization struct {

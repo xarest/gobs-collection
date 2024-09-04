@@ -5,7 +5,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/utils"
+	"github.com/xarest/gobs-collection/utils"
 )
 
 type Logrus struct {

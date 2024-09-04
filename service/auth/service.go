@@ -7,9 +7,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api/dto"
-	"github.com/xarest/gobs-template/lib/logger"
-	"github.com/xarest/gobs-template/schema"
+	"github.com/xarest/gobs-collection/api/dto"
+	"github.com/xarest/gobs-collection/lib/logger"
+	"github.com/xarest/gobs-collection/schema"
 	"golang.org/x/crypto/bcrypt"
 )
 

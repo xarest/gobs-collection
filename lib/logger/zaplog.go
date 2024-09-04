@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/utils"
+	"github.com/xarest/gobs-collection/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

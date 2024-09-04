@@ -7,14 +7,14 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api/handler/common"
-	"github.com/xarest/gobs-template/api/validator"
-	"github.com/xarest/gobs-template/schema"
-	"github.com/xarest/gobs-template/worker"
+	"github.com/xarest/gobs-collection/api/handler/common"
+	"github.com/xarest/gobs-collection/api/validator"
+	"github.com/xarest/gobs-collection/schema"
+	"github.com/xarest/gobs-collection/worker"
 )
 
 type Check struct {
-	worker worker.IClient
+	wClient worker.IClient
 }
 
 func (b *Check) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
@@ -26,7 +26,7 @@ func (b *Check) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 }
 
 func (b *Check) Setup(ctx context.Context, deps ...gobs.IService) error {
-	return gobs.Dependencies(deps).Assign(&b.worker)
+	return gobs.Dependencies(deps).Assign(&b.wClient)
 }
 
 // Route implements common.IHandler.
@@ -41,7 +41,7 @@ func (b *Check) Overall(c echo.Context) error {
 	validator.BindAndValidate(c, &page)
 	page.LoadDefault()
 
-	taskRuns, err := b.worker.GetTasks(schema.TaskStatusDone, page)
+	taskRuns, err := b.wClient.GetTasks(schema.TaskStatusDone, page)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (b *Check) GetTaskDetail(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid task ID").WithInternal(err)
 	}
-	task, err := b.worker.GetTask(taskID)
+	task, err := b.wClient.GetTask(taskID)
 	if err != nil {
 		return err
 	}

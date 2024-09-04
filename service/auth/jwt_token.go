@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/config"
+	"github.com/xarest/gobs-collection/lib/config"
 )
 
 type JWTSecret struct {

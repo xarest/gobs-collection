@@ -2,8 +2,8 @@ package worker
 
 import (
 	"github.com/google/uuid"
-	"github.com/xarest/gobs-template/schema"
-	"github.com/xarest/gobs-template/worker/local"
+	"github.com/xarest/gobs-collection/schema"
+	gocronwork "github.com/xarest/gobs-collection/worker/gocron"
 )
 
 type IClient interface {
@@ -13,5 +13,5 @@ type IClient interface {
 }
 
 func NewIClient() IClient {
-	return &local.WorkerClient{}
+	return &gocronwork.Cient{}
 }

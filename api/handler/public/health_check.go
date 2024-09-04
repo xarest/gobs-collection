@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/xarest/gobs-template/api/handler/common"
+	"github.com/xarest/gobs-collection/api/handler/common"
 )
 
 type HealthCheck struct{}

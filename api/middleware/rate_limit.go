@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/logger"
 	"golang.org/x/time/rate"
 )
 

@@ -7,8 +7,8 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/config"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/config"
+	"github.com/xarest/gobs-collection/lib/logger"
 )
 
 type Authentication struct {

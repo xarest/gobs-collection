@@ -1,4 +1,4 @@
-module github.com/xarest/gobs-template
+module github.com/xarest/gobs-collection
 
 go 1.23.0
 
@@ -25,7 +25,12 @@ require (
 	golang.org/x/time v0.5.0
 )
 
-require mellium.im/sasl v0.3.1 // indirect
+require (
+	github.com/go-co-op/gocron/v2 v2.11.0 // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+	mellium.im/sasl v0.3.1 // indirect
+)
 
 require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.4 // indirect
@@ -76,7 +81,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.26.0
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
+	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/db"
-	"github.com/xarest/gobs-template/schema"
+	"github.com/xarest/gobs-collection/lib/db"
+	"github.com/xarest/gobs-collection/schema"
 )
 
 type UserRepository struct {

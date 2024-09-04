@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api/handler/common"
+	"github.com/xarest/gobs-collection/api/handler/common"
 )
 
 type SuperAdminHandler struct {

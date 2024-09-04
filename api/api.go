@@ -14,17 +14,17 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	eMiddleware "github.com/labstack/echo/v4/middleware"
-	admin_api "github.com/xarest/gobs-template/api/handler/admin"
-	hCommon "github.com/xarest/gobs-template/api/handler/common"
-	public_api "github.com/xarest/gobs-template/api/handler/public"
-	superadmin_api "github.com/xarest/gobs-template/api/handler/super-admin"
-	user_api "github.com/xarest/gobs-template/api/handler/user"
-	"github.com/xarest/gobs-template/api/middleware"
-	"github.com/xarest/gobs-template/api/validator"
+	admin_api "github.com/xarest/gobs-collection/api/handler/admin"
+	hCommon "github.com/xarest/gobs-collection/api/handler/common"
+	public_api "github.com/xarest/gobs-collection/api/handler/public"
+	superadmin_api "github.com/xarest/gobs-collection/api/handler/super-admin"
+	user_api "github.com/xarest/gobs-collection/api/handler/user"
+	"github.com/xarest/gobs-collection/api/middleware"
+	"github.com/xarest/gobs-collection/api/validator"
 
-	"github.com/xarest/gobs-template/lib/config"
-	httpclient "github.com/xarest/gobs-template/lib/http-client"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/config"
+	httpclient "github.com/xarest/gobs-collection/lib/http-client"
+	"github.com/xarest/gobs-collection/lib/logger"
 	gCommon "github.com/xarest/gobs/common"
 )
 

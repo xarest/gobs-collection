@@ -10,8 +10,8 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/config"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/config"
+	"github.com/xarest/gobs-collection/lib/logger"
 	gCommon "github.com/xarest/gobs/common"
 )
 

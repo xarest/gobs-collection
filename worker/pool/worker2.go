@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/logger"
+	"github.com/xarest/gobs-collection/lib/logger"
 )
 
 type Worker2 struct {

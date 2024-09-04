@@ -5,8 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api/handler/common"
-	"github.com/xarest/gobs-template/api/handler/user/background"
+	"github.com/xarest/gobs-collection/api/handler/common"
+	"github.com/xarest/gobs-collection/api/handler/user/background"
 )
 
 type UserHandler struct {

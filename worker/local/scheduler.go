@@ -3,14 +3,15 @@ package local
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/lib/config"
-	"github.com/xarest/gobs-template/lib/logger"
-	"github.com/xarest/gobs-template/schema"
-	"github.com/xarest/gobs-template/worker/local/pool"
+	"github.com/xarest/gobs-collection/lib/config"
+	"github.com/xarest/gobs-collection/lib/logger"
+	"github.com/xarest/gobs-collection/schema"
+	"github.com/xarest/gobs-collection/worker/pool"
 )
 
 type SchedulerConfig struct {
@@ -128,13 +129,19 @@ func (s *Scheduler) StartServer(ctx context.Context, onReady func(err error)) er
 	}
 }
 
-func (s *Scheduler) AddTask(task *schema.Task) {
+func (s *Scheduler) AddTask(task *schema.Task) error {
 	s.mu.Lock()
-	s.tasks = append(s.tasks, task)
-	if s.status == SchedulerStatusWaiting {
-		s.ch <- nil
+	defer s.mu.Unlock()
+	for _, w := range s.workers {
+		if w.ID() == task.WorkerID {
+			s.tasks = append(s.tasks, task)
+			if s.status == SchedulerStatusWaiting {
+				s.ch <- nil
+			}
+			return nil
+		}
 	}
-	s.mu.Unlock()
+	return fmt.Errorf("worker not found for ID %s", task.WorkerID)
 }
 
 func (s *Scheduler) Stop(ctx context.Context) error {

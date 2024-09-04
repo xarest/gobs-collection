@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	"github.com/xarest/gobs-template/api/handler/common"
-	"github.com/xarest/gobs-template/worker"
+	"github.com/xarest/gobs-collection/api/handler/common"
+	"github.com/xarest/gobs-collection/worker"
 )
 
 type Trigger struct {

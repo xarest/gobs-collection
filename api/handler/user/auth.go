@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
-	hCommon "github.com/xarest/gobs-template/api/handler/common"
-	"github.com/xarest/gobs-template/api/middleware"
-	"github.com/xarest/gobs-template/lib/logger"
-	"github.com/xarest/gobs-template/service/auth"
+	hCommon "github.com/xarest/gobs-collection/api/handler/common"
+	"github.com/xarest/gobs-collection/api/middleware"
+	"github.com/xarest/gobs-collection/lib/logger"
+	"github.com/xarest/gobs-collection/service/auth"
 )
 
 type Auth struct {

@@ -1,4 +1,4 @@
-package local
+package gocronwork
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 	"github.com/xarest/gobs-collection/schema"
 )
 
-type WorkerClient struct {
+type Cient struct {
 	scheduler *Scheduler
 	taskList  []*schema.Task
 }
 
-func (w *WorkerClient) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
+func (w *Cient) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	return &gobs.ServiceLifeCycle{
 		Deps: gobs.Dependencies{
 			&Scheduler{},
@@ -24,11 +24,11 @@ func (w *WorkerClient) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error)
 	}, nil
 }
 
-func (w *WorkerClient) Setup(ctx context.Context, deps ...gobs.IService) error {
+func (w *Cient) Setup(ctx context.Context, deps ...gobs.IService) error {
 	return gobs.Dependencies(deps).Assign(&w.scheduler)
 }
 
-func (w *WorkerClient) AddTask(workerID string, params any, createdBy uuid.UUID) error {
+func (w *Cient) AddTask(workerID string, params any, createdBy uuid.UUID) error {
 	jsParams, err := json.Marshal(params)
 	if err != nil {
 		return err
@@ -40,12 +40,12 @@ func (w *WorkerClient) AddTask(workerID string, params any, createdBy uuid.UUID)
 		Status:    schema.TaskStatusPending,
 		CreatedAt: time.Now(),
 	}
-	w.scheduler.AddTask(&task)
 	w.taskList = append(w.taskList, &task)
-	return nil
+	fmt.Println("Adding task to scheduler", w.taskList)
+	return w.scheduler.AddTask(&task)
 }
 
-func (w *WorkerClient) GetTask(id uuid.UUID) (schema.Task, error) {
+func (w *Cient) GetTask(id uuid.UUID) (schema.Task, error) {
 	for _, t := range w.taskList {
 		if t.ID == id {
 			return *t, nil
@@ -54,7 +54,7 @@ func (w *WorkerClient) GetTask(id uuid.UUID) (schema.Task, error) {
 	return schema.Task{}, fmt.Errorf("task not found")
 }
 
-func (w *WorkerClient) GetTasks(status schema.TaskStatus, page schema.Page) ([]schema.Task, error) {
+func (w *Cient) GetTasks(status schema.TaskStatus, page schema.Page) ([]schema.Task, error) {
 	var results []schema.Task
 	for i, t := range w.taskList {
 		if i < page.Offset {
@@ -70,5 +70,5 @@ func (w *WorkerClient) GetTasks(status schema.TaskStatus, page schema.Page) ([]s
 	return results, nil
 }
 
-var _ gobs.IServiceInit = (*WorkerClient)(nil)
-var _ gobs.IServiceSetup = (*WorkerClient)(nil)
+var _ gobs.IServiceInit = (*Cient)(nil)
+var _ gobs.IServiceSetup = (*Cient)(nil)
