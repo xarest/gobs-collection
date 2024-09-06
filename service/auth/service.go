@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
 	"github.com/xarest/gobs-collection/api/dto"
+	"github.com/xarest/gobs-collection/lib/cache"
 	"github.com/xarest/gobs-collection/lib/logger"
 	"github.com/xarest/gobs-collection/schema"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +19,7 @@ type Auth struct {
 	log        logger.ILogger
 	jwtToken   *JwtToken
 	repository *UserRepository
+	cache      cache.ICache
 }
 
 func (s *Auth) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
@@ -25,12 +28,13 @@ func (s *Auth) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 			logger.NewILogger(),
 			&JwtToken{},
 			&UserRepository{},
+			cache.NewICache(),
 		},
 	}, nil
 }
 
 func (s *Auth) Setup(ctx context.Context, deps ...gobs.IService) error {
-	return gobs.Dependencies(deps).Assign(&s.log, &s.jwtToken, &s.repository)
+	return gobs.Dependencies(deps).Assign(&s.log, &s.jwtToken, &s.repository, &s.cache)
 }
 
 func (s *Auth) Register(ctx context.Context, creds dto.Credentials) (*schema.User, error) {
@@ -72,6 +76,10 @@ func (s *Auth) SignIn(ctx context.Context, creds dto.Credentials) (*dto.RespToke
 	userId := user.ID.String()
 	tokenStr, expired, err := s.jwtToken.ComposeToken(userId)
 	if nil != err {
+		return nil, err
+	}
+
+	if err := s.cache.Set(ctx, tokenStr, user, time.Until(expired)); nil != err {
 		return nil, err
 	}
 

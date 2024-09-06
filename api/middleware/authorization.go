@@ -34,7 +34,7 @@ func (a *Authorization) Setup(ctx context.Context, deps ...gobs.IService) error 
 	return gobs.Dependencies(deps).Assign(&a.log, &a.db, &a.cache)
 }
 
-func (a *Authorization) Handler(permissions ...string) echo.MiddlewareFunc {
+func (a *Authorization) VerifyPermission(permissions ...string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userCtx, err := a.getuserCtx(c)
@@ -71,17 +71,16 @@ func (a *Authorization) getuserCtx(c echo.Context) (schema.User, error) {
 	if !ok {
 		return userCtx, fmt.Errorf("token not found")
 	}
-	claims := token.Claims.(jwt.MapClaims)
-	userID, ok := claims["id"].(string)
-	if !ok {
-		return userCtx, fmt.Errorf("invalid token. Missinng user id")
-	}
 
-	uCtx, err := a.cache.Get(ctx, userID, &userCtx)
+	uCtx, err := a.cache.Get(ctx, token.Raw, &userCtx)
 	if err != nil {
 		return userCtx, err
 	}
-	userCtx = uCtx.(schema.User)
+	puCtx, ok := uCtx.(*schema.User)
+	if !ok {
+		return userCtx, fmt.Errorf("invalid user context")
+	}
+	userCtx = *puCtx
 	c.Set("user_context", userCtx)
 
 	return userCtx, nil

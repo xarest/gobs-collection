@@ -3,8 +3,8 @@ package dto
 import "time"
 
 type Credentials struct {
-	Pass  string `form:"pass" json:"pass" binding:"required"`
-	Email string `form:"email" json:"email" binding:"required"`
+	Pass  string `form:"pass" json:"pass" validate:"required,min=6"`
+	Email string `form:"email" json:"email" validate:"required,email"`
 }
 
 type RespToken struct {

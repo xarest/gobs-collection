@@ -2,6 +2,7 @@ package validator
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/xarest/gobs"
@@ -38,7 +39,7 @@ func (vt *Validator) Setup(ctx context.Context, deps ...gobs.IService) error {
 func (vt *Validator) Validate(i interface{}) error {
 	if err := vt.v.Struct(i); err != nil {
 		// Optionally, you could return the error to give each route more control over the status code
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request").WithInternal(err)
 	}
 	return nil
 }

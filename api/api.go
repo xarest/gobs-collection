@@ -118,14 +118,14 @@ func (a *API) Setup(ctx context.Context, deps ...gobs.IService) error {
 	e.Use(eMiddleware.RequestID())
 	e.Use(eMiddleware.Gzip())
 	e.Use(eMiddleware.Decompress())
-	e.Use(eMiddleware.CSRF())
+	// e.Use(eMiddleware.CSRF())
 
 	e.HTTPErrorHandler = mErrorHandler.CatchErr
 	e.Validator = validator
 	e.Use(mLogger.Handler())
 
 	// setup routes
-	g := e.Group("/api")
+	g := e.Group("/api/v1")
 	for _, h := range handlers {
 		h.Route(g)
 	}

@@ -37,7 +37,7 @@ func (a *Auth) Setup(ctx context.Context, deps ...gobs.IService) error {
 // Route implements common.IHandler.
 func (a *Auth) Route(r *echo.Group) {
 	g := r.Group("/auth")
-	g.Use(a.mwAuth.Handler())
+	g.Use(a.mwAuth.CheckJWTToken())
 	g.PATCH("", a.RefreshToken)
 	g.DELETE("", a.SignOut)
 }

@@ -35,12 +35,13 @@ func (r *HTTPErrorHandling) CatchErr(err error, c echo.Context) {
 
 	httpErr, ok := err.(*echo.HTTPError)
 	if !ok {
-		httpErr = echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
+		httpErr = echo.NewHTTPError(http.StatusInternalServerError, "Internal server error").WithInternal(err)
 	}
 
-	if httpErr.Code == http.StatusInternalServerError {
-		r.log.Errorf("Error: %v", err)
+	if httpErr.Internal != nil {
+		r.log.Error(httpErr.Internal)
 	}
+
 	if err := c.JSON(httpErr.Code, httpErr.Message); err != nil {
 		r.log.Errorf("Error: %v", err)
 	}

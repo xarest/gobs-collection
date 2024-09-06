@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/xarest/gobs"
 	"github.com/xarest/gobs-collection/lib/config"
+	"github.com/xarest/gobs-collection/lib/logger"
 )
 
 type JWTSecret struct {
@@ -17,12 +18,17 @@ type JWTSecret struct {
 type JwtToken struct {
 	secretKey string
 	timeout   time.Duration
+
+	log logger.ILogger
 }
 
 // Init implements gobs.IService.
 func (a *JwtToken) Init(ctx context.Context) (*gobs.ServiceLifeCycle, error) {
 	return &gobs.ServiceLifeCycle{
-		Deps: gobs.Dependencies{config.NewIConfig()},
+		Deps: gobs.Dependencies{
+			logger.NewILogger(),
+			config.NewIConfig(),
+		},
 	}, nil
 }
 
@@ -31,7 +37,7 @@ func (a *JwtToken) Setup(ctx context.Context, deps ...gobs.IService) error {
 		jwtSecret JWTSecret
 		config    config.IConfiguration
 	)
-	if err := gobs.Dependencies(deps).Assign(&config); err != nil {
+	if err := gobs.Dependencies(deps).Assign(&a.log, &config); err != nil {
 		return err
 	}
 	if err := config.Parse(&jwtSecret); err != nil {
@@ -56,7 +62,7 @@ func (a *JwtToken) ComposeToken(userID string) (string, time.Time, error) {
 	// Declare the token with the algorithm used for signing, and the claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// Create the JWT string
-	tokenStr, err := token.SignedString(a.secretKey)
+	tokenStr, err := token.SignedString([]byte(a.secretKey))
 	return tokenStr, expirationTime, err
 }
 
