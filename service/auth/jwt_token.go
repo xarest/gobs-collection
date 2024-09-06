@@ -10,11 +10,13 @@ import (
 )
 
 type JWTSecret struct {
-	Secret string `env:"JWT_SECRET" envDefault:"mysecretjwt"`
+	Secret  string `env:"JWT_SECRET" envDefault:"mysecretjwt"`
+	Timeout int    `env:"JWT_TIMEOUT" envDefault:"86400"`
 }
 
 type JwtToken struct {
 	secretKey string
+	timeout   time.Duration
 }
 
 // Init implements gobs.IService.
@@ -36,13 +38,14 @@ func (a *JwtToken) Setup(ctx context.Context, deps ...gobs.IService) error {
 		return err
 	}
 	a.secretKey = jwtSecret.Secret
+	a.timeout = time.Duration(jwtSecret.Timeout) * time.Second
 	return nil
 }
 
 func (a *JwtToken) ComposeToken(userID string) (string, time.Time, error) {
 	// Declare the expiration time of the token
 	// here, we have kept it as 5 minutes
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(a.timeout)
 	// Create the JWT claims, which includes the username and expiry time
 	claims := &jwt.RegisteredClaims{
 		ID: userID,
